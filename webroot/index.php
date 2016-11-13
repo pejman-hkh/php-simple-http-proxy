@@ -5,6 +5,7 @@ $url = $_SERVER['REQUEST_URI'];
 
 $headers = getallheaders();
 
+
 $headers1 = array();
 
 if( isset($headers['Cookie'] )) {
@@ -21,12 +22,6 @@ foreach( $headers1 as $k => $v ) {
     $h[] = $k.": ".$v;
 }
 
-
-$postdata = http_build_query(
-    $_POST
-);
-
-
 $opts = array(
   'http'=>array(
     'method'=> $_SERVER['REQUEST_METHOD'],
@@ -35,6 +30,10 @@ $opts = array(
 );
 
 if( $_SERVER['REQUEST_METHOD'] === 'POST' ) {
+  $postdata = http_build_query(
+      $_POST
+  );
+
   $opts['http']['content'] = $postdata;
 }
 
@@ -43,14 +42,13 @@ $context = stream_context_create($opts);
 
 
 if( @$c = file_get_contents( $url , false, $context ) ) {
+  foreach( $http_response_header as $k => $v ) {
+    header( $v );
+  }
 
+
+  echo $c;
 }
 
-foreach( $http_response_header as $k => $v ) {
-  header( $v );
-}
-
-
-echo $c;
 
 ?>
